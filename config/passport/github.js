@@ -25,13 +25,14 @@ module.exports = new GithubStrategy({
     User.load(options, function (err, user) {
       if (err) return done(err);
       if (!user) {
-        user = new User({
+        var gitUser = {
           name: profile.displayName,
-          email: profile.emails[0].value,
           username: profile.username,
           provider: 'github',
           github: profile._json
-        });
+        }
+        if( profile.email ) gitUser.email = profile.email;
+        user = new User(gitUser);
         user.save(function (err) {
           if (err) console.log(err);
           return done(err, user);
